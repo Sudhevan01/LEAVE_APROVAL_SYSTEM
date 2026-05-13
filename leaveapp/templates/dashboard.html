@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">Employee Dashboard</h2>
+
+<div class="row g-4">
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card bg-primary text-white shadow p-3 h-100">
+            <h4>Total Leaves</h4>
+            <h2 class="mb-0">{{ total_leaves }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card bg-warning text-dark shadow p-3 h-100">
+            <h4>Pending</h4>
+            <h2 class="mb-0">{{ pending_leaves }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card bg-success text-white shadow p-3 h-100">
+            <h4>Approved</h4>
+            <h2 class="mb-0">{{ approved_leaves }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card bg-danger text-white shadow p-3 h-100">
+            <h4>Rejected</h4>
+            <h2 class="mb-0">{{ rejected_leaves }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<hr class="my-5">
+
+<h3>Apply Leave</h3>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label>Leave Type</label>
+        <input type="text" name="leave_type" class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label>Start Date</label>
+        <input type="date" name="start_date" class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label>End Date</label>
+        <input type="date" name="end_date" class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label>Reason</label>
+        <textarea name="reason" class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-primary">
+        Apply Leave
+    </button>
+
+</form>
+
+<hr class="my-5">
+
+<h3>Leave History</h3>
+
+<table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Leave Type</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for leave in leaves %}
+
+        <tr>
+            <td>{{ leave.leave_type }}</td>
+            <td>{{ leave.start_date }}</td>
+            <td>{{ leave.end_date }}</td>
+            <td>{{ leave.status }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+
+{% endblock %}

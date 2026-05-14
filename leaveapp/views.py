@@ -38,3 +38,35 @@ def dashboard(request):
     }
 
     return render(request, 'dashboard.html', context)
+
+def admin_dashboard(request):
+
+    leaves = LeaveRequest.objects.all()
+
+    context = {
+        'leaves': leaves
+    }
+
+    return render(request, 'admin_dashboard.html', context)
+
+
+def approve_leave(request, leave_id):
+
+    leave = LeaveRequest.objects.get(id=leave_id)
+
+    leave.status = 'Approved'
+
+    leave.save()
+
+    return redirect('admin_dashboard')
+
+
+def reject_leave(request, leave_id):
+
+    leave = LeaveRequest.objects.get(id=leave_id)
+
+    leave.status = 'Rejected'
+
+    leave.save()
+
+    return redirect('admin_dashboard')

@@ -70,3 +70,42 @@ def reject_leave(request, leave_id):
     leave.save()
 
     return redirect('admin_dashboard')
+
+def admin_dashboard(request):
+
+    leaves = LeaveRequest.objects.all()
+
+    context = {
+        'leaves': leaves,
+        'total': leaves.count(),
+        'pending': leaves.filter(status='Pending').count(),
+        'approved': leaves.filter(status='Approved').count(),
+        'rejected': leaves.filter(status='Rejected').count(),
+    }
+
+    return render(request,
+                  'admin_dashboard.html',
+                  context)
+
+def admin_dashboard(request):
+
+    search = request.GET.get('search')
+
+    leaves = LeaveRequest.objects.all()
+
+    if search:
+        leaves = leaves.filter(
+            employee__name__icontains=search
+        )
+
+    context = {
+        'leaves': leaves,
+        'total': leaves.count(),
+        'pending': leaves.filter(status='Pending').count(),
+        'approved': leaves.filter(status='Approved').count(),
+        'rejected': leaves.filter(status='Rejected').count(),
+    }
+
+    return render(request,
+                  'admin_dashboard.html',
+                  context)

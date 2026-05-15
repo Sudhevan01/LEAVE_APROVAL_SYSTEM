@@ -17,16 +17,15 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard' %}">Dash</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin_dashboard' %}">A_Dash</a>
-                    </li>
-                </ul>
-            </div>
+            <div>
+                <a href="/" class="btn btn-light btn-sm">
+                    Employee
+                </a>
+
+                <a href="/admin-dashboard/" class="btn btn-warning btn-sm">
+                    Admin
+        </a>
+</div>
         </div>
     </nav>
 

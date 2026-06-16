@@ -1,10 +1,9 @@
 from django.urls import path
-from django.shortcuts import redirect
 # pyrefly: ignore [missing-import]
 from . import views
 
 urlpatterns = [
-    path('', lambda request: redirect('login')),
+    path('', views.landing_view, name='landing'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),

@@ -6,7 +6,13 @@ from django.shortcuts import render,redirect
 # pyrefly: ignore [missing-import]
 from .models import Employee,LeaveRequest
 
+
+def landing_view(request):
+    return render(request, 'landing.html')
+
+
 def login_view(request):
+    role = request.GET.get('role', request.POST.get('role', 'employee'))
 
     if request.method == 'POST':
 
@@ -22,18 +28,20 @@ def login_view(request):
         if user is not None:
 
             login(request, user)
-            if user.isstaff:
-                return redirect('admin-dashboard')
+            role = request.POST.get('role', 'employee')
+            if role == 'admin' and user.is_staff:
+                return redirect('admin_dashboard')
             else:
                 return redirect('dashboard')
-    return render(request, 'login.html')
+
+    return render(request, 'login.html', {'role': role})
 
 
 def logout_view(request):
 
     logout(request)
 
-    return redirect('login')
+    return redirect('landing')
 
 @login_required
 def dashboard(request):
@@ -75,7 +83,14 @@ def admin_dashboard(request):
     if not request.user.is_staff:
         return HttpResponse("Unauthorized Access")
 
+    search = request.GET.get('search')
+
     leaves = LeaveRequest.objects.all()
+
+    if search:
+        leaves = leaves.filter(
+            employee__name__icontains=search
+        )
 
     context = {
         'leaves': leaves,
@@ -85,9 +100,7 @@ def admin_dashboard(request):
         'rejected': leaves.filter(status='Rejected').count(),
     }
 
-    return render(request,
-                  'admin_dashboard.html',
-                  context)
+    return render(request, 'admin_dashboard.html', context)
 
 
 def approve_leave(request, leave_id):
@@ -111,42 +124,6 @@ def reject_leave(request, leave_id):
 
     return redirect('admin_dashboard')
 
-def admin_dashboard(request):
-
-    leaves = LeaveRequest.objects.all()
-
-    context = {
-        'leaves': leaves,
-        'total': leaves.count(),
-        'pending': leaves.filter(status='Pending').count(),
-        'approved': leaves.filter(status='Approved').count(),
-        'rejected': leaves.filter(status='Rejected').count(),
-    }
-
-    return render(request,
-                  'admin_dashboard.html',
-                  context)
-
-def admin_dashboard(request):
-
-    search = request.GET.get('search')
-
-    leaves = LeaveRequest.objects.all()
-
-    if search:
-        leaves = leaves.filter(
-            employee__name__icontains=search
-        )
-
-    context = {
-        'leaves': leaves,
-        'total': leaves.count(),
-        'pending': leaves.filter(status='Pending').count(),
-        'approved': leaves.filter(status='Approved').count(),
-        'rejected': leaves.filter(status='Rejected').count(),
-    }
-
-    return render(request,'admin_dashboard.html',context)
 
 def register_view(request):
 

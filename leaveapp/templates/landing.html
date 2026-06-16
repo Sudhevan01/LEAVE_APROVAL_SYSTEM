@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Approval System</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: drift 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .landing-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .landing-title {
+            color: #ffffff;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .landing-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .role-cards {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .role-card {
+            width: 260px;
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            color: #fff;
+            text-decoration: none;
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .role-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Employee card */
+        .card-employee {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+        }
+
+        .card-employee::before {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.08));
+        }
+
+        .card-employee:hover {
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+        }
+
+        .card-employee .role-icon {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Admin card */
+        .card-admin {
+            background: linear-gradient(145deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(168, 85, 247, 0.15);
+        }
+
+        .card-admin::before {
+            background: linear-gradient(145deg, rgba(168, 85, 247, 0.25), rgba(168, 85, 247, 0.08));
+        }
+
+        .card-admin:hover {
+            box-shadow: 0 20px 60px rgba(168, 85, 247, 0.3);
+        }
+
+        .card-admin .role-icon {
+            background: linear-gradient(135deg, #a855f7, #c084fc);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+        }
+
+        .role-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            transition: transform 0.4s ease;
+        }
+
+        .role-card:hover .role-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .role-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.5;
+        }
+
+        .role-arrow {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover .role-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(59, 130, 246, 0.12);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: rgba(168, 85, 247, 0.12);
+            bottom: 10%;
+            right: 10%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        @media (max-width: 600px) {
+            .landing-title { font-size: 2rem; }
+            .role-cards { flex-direction: column; align-items: center; gap: 1.5rem; }
+            .role-card { width: 90%; max-width: 280px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="landing-container">
+
+        <h1 class="landing-title">Leave Approval System</h1>
+        <p class="landing-subtitle">Select your role to continue</p>
+
+        <div class="role-cards">
+
+            <a href="{% url 'login' %}?role=employee" class="role-card card-employee" id="employee-card">
+                <div class="role-icon">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <div class="role-name">Employee</div>
+                <div class="role-desc">Apply for leaves, track requests &amp; view your history</div>
+                <div class="role-arrow">
+                    <i class="bi bi-arrow-right"></i> Continue
+                </div>
+            </a>
+
+            <a href="{% url 'login' %}?role=admin" class="role-card card-admin" id="admin-card">
+                <div class="role-icon">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <div class="role-name">Admin</div>
+                <div class="role-desc">Manage leave requests, approve or reject applications</div>
+                <div class="role-arrow">
+                    <i class="bi bi-arrow-right"></i> Continue
+                </div>
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

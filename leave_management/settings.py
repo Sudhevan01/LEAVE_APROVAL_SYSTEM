@@ -116,3 +116,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'zodiacsudhevan@gmail.com'
+
+EMAIL_HOST_PASSWORD = 'zkxi vprh tvan uqin'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Logging configuration for debugging email and leave approval
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'leaveapp': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}

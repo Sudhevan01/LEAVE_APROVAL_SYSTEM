@@ -92,3 +92,6 @@ Git & GitHub Version Control
 Sudhevan Y
 
 MCA Student | Python & Django Developer | Machine Learning Enthusiast
+
+
+If you find this project useful, consider giving it a ⭐ on GitHub. 🚀

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+
+<div class="row g-4 justify-content-center">
+
+    <!-- Profile Card -->
+    <div class="col-lg-4">
+        <div class="content-card animate-in" style="overflow:hidden;">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {{ employee.name|make_list|first|upper }}
+                </div>
+                <div class="profile-name">{{ employee.name }}</div>
+                <div class="profile-role">{{ employee.role }} &middot; {{ employee.department }}</div>
+            </div>
+            <div class="content-card-body">
+                <div class="profile-info-item">
+                    <div class="profile-info-icon"><i class="bi bi-envelope"></i></div>
+                    <div>
+                        <div class="profile-info-label">Email</div>
+                        <div class="profile-info-value">{{ employee.email }}</div>
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-icon"><i class="bi bi-building"></i></div>
+                    <div>
+                        <div class="profile-info-label">Department</div>
+                        <div class="profile-info-value">{{ employee.department }}</div>
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-icon"><i class="bi bi-person-badge"></i></div>
+                    <div>
+                        <div class="profile-info-label">Role</div>
+                        <div class="profile-info-value">{{ employee.role }}</div>
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-icon"><i class="bi bi-person"></i></div>
+                    <div>
+                        <div class="profile-info-label">Username</div>
+                        <div class="profile-info-value">{{ user.username }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile & Stats -->
+    <div class="col-lg-6">
+
+        <!-- Leave Stats Summary -->
+        <div class="content-card animate-in mb-4">
+            <div class="content-card-header">
+                <div class="content-card-title">
+                    <i class="bi bi-bar-chart-line"></i> Leave Summary
+                </div>
+            </div>
+            <div class="content-card-body">
+                <div class="row g-3">
+                    <div class="col-4 text-center">
+                        <div style="font-size:1.8rem;font-weight:800;color:var(--primary);">{{ total_leaves }}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">Total</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div style="font-size:1.8rem;font-weight:800;color:var(--success);">{{ approved_leaves }}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">Approved</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div style="font-size:1.8rem;font-weight:800;color:var(--warning);">{{ pending_leaves }}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div class="content-card animate-in">
+            <div class="content-card-header">
+                <div class="content-card-title">
+                    <i class="bi bi-pencil-square"></i> Edit Profile
+                </div>
+            </div>
+            <div class="content-card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-hrms">Full Name</label>
+                            <input type="text" name="name" class="form-control-hrms" value="{{ employee.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-hrms">Email</label>
+                            <input type="email" name="email" class="form-control-hrms" value="{{ employee.email }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-hrms">Department</label>
+                            <input type="text" name="department" class="form-control-hrms" value="{{ employee.department }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-hrms">Role</label>
+                            <input type="text" name="role" class="form-control-hrms" value="{{ employee.role }}" {% if not user.is_staff %}readonly{% endif %}>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn-hrms btn-primary-hrms">
+                            <i class="bi bi-check-lg"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

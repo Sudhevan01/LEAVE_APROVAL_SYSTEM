@@ -1,163 +1,233 @@
 {% extends 'base.html' %}
 
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
 {% block content %}
 
-<h2 class="mb-4">Admin Dashboard</h2>
-
-<form method="GET" class="mb-4">
-
-    <input type="text"
-           name="search"
-           class="form-control"
-           placeholder="Search employee name">
-
-</form>
-
-<div class="row mb-4">
-
-    <div class="col-md-3">
-        <div class="card bg-primary text-white shadow p-3">
-            <h5>Total Requests</h5>
-            <h2>{{ total }}</h2>
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-total animate-in">
+            <div class="kpi-header">
+                <span class="kpi-label">Total Requests</span>
+                <div class="kpi-icon"><i class="bi bi-calendar2-week"></i></div>
+            </div>
+            <div class="kpi-value">{{ total }}</div>
+            <div class="kpi-sub">All employee requests</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark shadow p-3">
-            <h5>Pending</h5>
-            <h2>{{ pending }}</h2>
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-pending animate-in">
+            <div class="kpi-header">
+                <span class="kpi-label">Pending</span>
+                <div class="kpi-icon"><i class="bi bi-hourglass-split"></i></div>
+            </div>
+            <div class="kpi-value">{{ pending }}</div>
+            <div class="kpi-sub">Needs your attention</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card bg-success text-white shadow p-3">
-            <h5>Approved</h5>
-            <h2>{{ approved }}</h2>
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-approved animate-in">
+            <div class="kpi-header">
+                <span class="kpi-label">Approved</span>
+                <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+            </div>
+            <div class="kpi-value">{{ approved }}</div>
+            <div class="kpi-sub">Leaves granted</div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card bg-danger text-white shadow p-3">
-            <h5>Rejected</h5>
-            <h2>{{ rejected }}</h2>
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-rejected animate-in">
+            <div class="kpi-header">
+                <span class="kpi-label">Rejected</span>
+                <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
+            </div>
+            <div class="kpi-value">{{ rejected }}</div>
+            <div class="kpi-sub">Leaves denied</div>
         </div>
     </div>
-
 </div>
 
-<table class="table table-bordered table-hover">
-
-    <thead class="table-dark">
-        <tr>
-            <th>Employee</th>
-            <th>Leave Type</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-
-    <tbody>
-
-        {% for leave in leaves %}
-
-        <tr>
-
-            <td>{{ leave.employee.name }}</td>
-            <td>{{ leave.leave_type }}</td>
-            <td>{{ leave.start_date }}</td>
-            <td>{{ leave.end_date }}</td>
-
-            <td>
-
-                {% if leave.status == 'Pending' %}
-                <span class="badge bg-warning">
-                    Pending
-                </span>
-
-                {% elif leave.status == 'Approved' %}
-                <span class="badge bg-success">
-                    Approved
-                </span>
-
-                {% else %}
-                <span class="badge bg-danger">
-                    Rejected
-                </span>
-
-                {% endif %}
-
-            </td>
-
-            <td>
-
-                <a href="{% url 'approve_leave' leave.id %}" class="btn btn-success btn-sm">
-                    Approve
-                </a>
-
-                <a href="{% url 'reject_leave' leave.id %}" class="btn btn-danger btn-sm">
-                    Reject
-                </a>
-
-            </td>
-
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-
-</table>
-
-<div class="card shadow p-4 mt-3">
-
-    <h3 class="mb-4">Leave Analytics</h3>
-
-    <canvas id="leaveChart"></canvas>
-
+<!-- Leave Requests Table -->
+<div class="content-card animate-in mb-4">
+    <div class="content-card-header">
+        <div class="content-card-title">
+            <i class="bi bi-list-check"></i> Leave Requests
+        </div>
+        <div class="d-flex gap-12 align-items-center flex-wrap">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="tableSearch" class="form-control-hrms" placeholder="Search employee..." style="padding-left:40px;">
+            </div>
+            <form method="GET" class="d-flex gap-8">
+                <input type="text" name="search" class="form-control-hrms" placeholder="Filter by name..." value="{{ request.GET.search }}" style="width:180px;">
+                <button type="submit" class="btn-hrms btn-primary-hrms btn-sm-hrms">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="content-card-body no-padding">
+        {% if leaves %}
+        <div class="table-responsive-hrms">
+            <table class="table-modern" id="adminLeaveTable">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leaves %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-8">
+                                <div class="sidebar-user-avatar" style="width:32px;height:32px;font-size:0.7rem;">
+                                    {{ leave.employee.name|make_list|first|upper }}
+                                </div>
+                                <strong>{{ leave.employee.name }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ leave.leave_type }}</td>
+                        <td>{{ leave.start_date|date:"M d, Y" }}</td>
+                        <td>{{ leave.end_date|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="badge-status badge-{{ leave.status|lower }}">
+                                {{ leave.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if leave.status == 'Pending' %}
+                            <div class="d-flex gap-8">
+                                <a href="{% url 'approve_leave' leave.id %}" class="btn-hrms btn-success-hrms btn-sm-hrms btn-icon" title="Approve">
+                                    <i class="bi bi-check-lg"></i>
+                                </a>
+                                <a href="{% url 'reject_leave' leave.id %}" class="btn-hrms btn-danger-hrms btn-sm-hrms btn-icon" title="Reject">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            </div>
+                            {% else %}
+                            <span style="color:var(--text-muted);font-size:0.8rem;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-hrms" id="adminLeaveTablePagination"></div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h5>No leave requests</h5>
+            <p>No leave requests match your criteria</p>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
+<!-- Charts Row -->
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="content-card animate-in">
+            <div class="content-card-header">
+                <div class="content-card-title">
+                    <i class="bi bi-bar-chart"></i> Leave Status Overview
+                </div>
+            </div>
+            <div class="content-card-body chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="content-card animate-in">
+            <div class="content-card-header">
+                <div class="content-card-title">
+                    <i class="bi bi-pie-chart"></i> Status Distribution
+                </div>
+            </div>
+            <div class="content-card-body chart-container" style="display:flex;align-items:center;justify-content:center;">
+                <canvas id="pieChart" style="max-height:280px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    const ctx = document.getElementById('leaveChart');
+    (function() {
+        var colors = getChartColors();
+        var defaults = getChartDefaults();
+        var pendingCount = parseInt("{{ pending }}");
+        var approvedCount = parseInt("{{ approved }}");
+        var rejectedCount = parseInt("{{ rejected }}");
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Pending', 'Approved', 'Rejected'],
-            datasets: [{
-                label: 'Leave Status', 
-                data: [
-                    {{ pending }},
-                    {{ approved }},
-                    {{ rejected }}
-                ],
-                backgroundColor: [
-                    'rgba(255, 193, 7, 0.7)',  
-                    'rgba(40, 167, 69, 0.7)', 
-                    'rgba(220, 53, 69, 0.7)'  
-                ],
-                
-
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false 
-                }
+        // Bar Chart
+        var barCtx = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                datasets: [{
+                    label: 'Leave Requests',
+                    data: [pendingCount, approvedCount, rejectedCount],
+                    backgroundColor: [colors.pending.bg, colors.approved.bg, colors.rejected.bg],
+                    borderColor: [colors.pending.border, colors.approved.border, colors.rejected.border],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barPercentage: 0.5
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: true
+            options: defaults
+        });
+        registerChart(barChart);
+
+        // Pie Chart
+        var pieCtx = document.getElementById('pieChart').getContext('2d');
+        var pieChart = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                datasets: [{
+                    data: [pendingCount, approvedCount, rejectedCount],
+                    backgroundColor: [colors.pending.bg, colors.approved.bg, colors.rejected.bg],
+                    borderColor: [colors.pending.border, colors.approved.border, colors.rejected.border],
+                    borderWidth: 2,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: colors.textColor,
+                            font: { family: "'Inter', sans-serif", size: 12, weight: 500 },
+                            padding: 16,
+                            usePointStyle: true,
+                            pointStyleWidth: 10
+                        }
+                    }
                 }
             }
-        }
-    });
-</script>
+        });
+        registerChart(pieChart);
 
+        // Pagination
+        initPagination('adminLeaveTable', 8);
+    })();
+</script>
 {% endblock %}

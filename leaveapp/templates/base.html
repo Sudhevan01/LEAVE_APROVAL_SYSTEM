@@ -1,38 +1,145 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave Approval System</title>
+    <title>{% block title %}HRMS{% endblock %} — Leave Management</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">Leave Approval System</span>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <i class="bi bi-calendar2-check"></i>
+            </div>
             <div>
-                <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm ms-2">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
+                <div class="sidebar-brand-text">LeaveHR</div>
+                <div class="sidebar-brand-sub">Management System</div>
             </div>
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        {% block content %}
-        {% endblock %}
-    </div>
+        <nav class="sidebar-nav">
+            {% if not user.is_staff %}
+            <div class="sidebar-nav-label">Main</div>
+
+            <a href="{% url 'dashboard' %}" class="sidebar-link {% if active_page == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            </a>
+
+            <a href="{% url 'apply_leave' %}" class="sidebar-link {% if active_page == 'apply_leave' %}active{% endif %}">
+                <i class="bi bi-plus-circle"></i> Apply Leave
+            </a>
+
+            <a href="{% url 'leave_history' %}" class="sidebar-link {% if active_page == 'leave_history' %}active{% endif %}">
+                <i class="bi bi-clock-history"></i> Leave History
+            </a>
+
+            <a href="{% url 'calendar' %}" class="sidebar-link {% if active_page == 'calendar' %}active{% endif %}">
+                <i class="bi bi-calendar3"></i> Calendar
+            </a>
+            {% endif %}
+
+            {% if user.is_staff %}
+            <div class="sidebar-nav-label">Administration</div>
+
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if active_page == 'admin_dashboard' %}active{% endif %}">
+                <i class="bi bi-shield-check"></i> Admin Dashboard
+            </a>
+            {% endif %}
+
+            <div class="sidebar-nav-label">Account</div>
+
+            <a href="{% url 'profile' %}" class="sidebar-link {% if active_page == 'profile' %}active{% endif %}">
+                <i class="bi bi-person"></i> Profile
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    {{ user.username|make_list|first|upper }}
+                </div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name">{{ user.username }}</div>
+                    <div class="sidebar-user-role">{% if user.is_staff %}Administrator{% else %}Employee{% endif %}</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Top Navbar -->
+    <header class="top-navbar">
+        <div class="navbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+            <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+        </div>
+
+        <div class="navbar-right">
+            <!-- Dark Mode Toggle -->
+            <label class="theme-switch navbar-icon-btn" style="border:none;background:none;width:auto;padding:0 8px;" title="Toggle dark mode">
+                <input type="checkbox" id="themeToggle">
+                <span class="theme-slider"></span>
+            </label>
+
+            <!-- Notifications -->
+            <div class="navbar-icon-btn" title="Notifications">
+                <i class="bi bi-bell"></i>
+                {% if pending_count %}<span class="notification-badge"></span>{% endif %}
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+                <div class="navbar-profile" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="navbar-profile-avatar">
+                        {{ user.username|make_list|first|upper }}
+                    </div>
+                    <div>
+                        <div class="navbar-profile-name">{{ user.username }}</div>
+                        <div class="navbar-profile-sub">{% if user.is_staff %}Admin{% else %}Employee{% endif %}</div>
+                    </div>
+                    <i class="bi bi-chevron-down" style="font-size:0.7rem;color:var(--text-muted);margin-left:4px;"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-hrms">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person"></i> My Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert-hrms alert-{{ message.tags }}-hrms">
+            <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 
 </body>
-
 </html>

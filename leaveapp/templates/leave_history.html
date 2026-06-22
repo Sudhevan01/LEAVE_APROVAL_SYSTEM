@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave History{% endblock %}
+{% block page_title %}Leave History{% endblock %}
+
+{% block content %}
+
+<div class="content-card animate-in">
+    <div class="content-card-header">
+        <div class="content-card-title">
+            <i class="bi bi-clock-history"></i> All Leave Requests
+        </div>
+        <div class="d-flex gap-12 align-items-center flex-wrap">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="tableSearch" class="form-control-hrms" placeholder="Search leaves..." style="padding-left:40px;min-width:220px;">
+            </div>
+            <a href="{% url 'apply_leave' %}" class="btn-hrms btn-primary-hrms btn-sm-hrms">
+                <i class="bi bi-plus-circle"></i> New Leave
+            </a>
+        </div>
+    </div>
+    <div class="content-card-body no-padding">
+        {% if leaves %}
+        <div class="table-responsive-hrms">
+            <table class="table-modern" id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Reason</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leaves %}
+                    <tr>
+                        <td><strong>{{ leave.leave_type }}</strong></td>
+                        <td>{{ leave.start_date|date:"M d, Y" }}</td>
+                        <td>{{ leave.end_date|date:"M d, Y" }}</td>
+                        <td style="max-width:200px;">
+                            <span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                                {{ leave.reason }}
+                            </span>
+                        </td>
+                        <td>{{ leave.applied_on|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="badge-status badge-{{ leave.status|lower }}">
+                                {{ leave.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-hrms" id="historyTablePagination"></div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h5>No leave history</h5>
+            <p>You haven't applied for any leaves yet</p>
+            <a href="{% url 'apply_leave' %}" class="btn-hrms btn-primary-hrms" style="margin-top:12px;">
+                <i class="bi bi-plus-circle"></i> Apply Leave
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    initPagination('historyTable', 10);
+</script>
+{% endblock %}

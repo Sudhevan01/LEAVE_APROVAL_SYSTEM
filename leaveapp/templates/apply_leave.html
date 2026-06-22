@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply Leave{% endblock %}
+{% block page_title %}Apply Leave{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="content-card animate-in">
+            <div class="content-card-header">
+                <div class="content-card-title">
+                    <i class="bi bi-plus-circle"></i> New Leave Request
+                </div>
+            </div>
+            <div class="content-card-body">
+                <form method="POST" id="leaveForm">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-hrms">Leave Type</label>
+                            <select name="leave_type" class="form-select-hrms" required>
+                                <option value="" disabled selected>Select leave type</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Casual Leave">Casual Leave</option>
+                                <option value="Earned Leave">Earned Leave</option>
+                                <option value="Maternity Leave">Maternity Leave</option>
+                                <option value="Paternity Leave">Paternity Leave</option>
+                                <option value="Compensatory Off">Compensatory Off</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- spacer for alignment -->
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-hrms">Start Date</label>
+                            <input type="date" name="start_date" class="form-control-hrms" required id="startDate">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-hrms">End Date</label>
+                            <input type="date" name="end_date" class="form-control-hrms" required id="endDate">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label-hrms">Reason</label>
+                            <textarea name="reason" class="form-control-hrms" rows="4" placeholder="Briefly describe the reason for your leave..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-12 mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn-hrms btn-outline-hrms">Cancel</a>
+                        <button type="submit" class="btn-hrms btn-primary-hrms">
+                            <i class="bi bi-send"></i> Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set min date to today
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate').setAttribute('min', today);
+    document.getElementById('endDate').setAttribute('min', today);
+
+    document.getElementById('startDate').addEventListener('change', function() {
+        document.getElementById('endDate').setAttribute('min', this.value);
+        if (document.getElementById('endDate').value < this.value) {
+            document.getElementById('endDate').value = this.value;
+        }
+    });
+</script>
+{% endblock %}

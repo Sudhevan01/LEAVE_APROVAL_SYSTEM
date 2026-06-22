@@ -1,48 +1,49 @@
-{% extends 'base.html' %}
+{% extends 'base_auth.html' %}
+
+{% block title %}Login{% endblock %}
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-4">
+<h2 class="auth-title">
+    {% if role == 'admin' %}Admin Login{% else %}Welcome Back{% endif %}
+</h2>
+<p class="auth-subtitle">
+    {% if role == 'admin' %}
+    Sign in to the admin dashboard
+    {% else %}
+    Sign in to your employee account
+    {% endif %}
+</p>
 
-        <div class="card shadow p-4">
+<form method="POST" class="auth-form">
+    {% csrf_token %}
+    <input type="hidden" name="role" value="{{ role }}">
 
-            <h3 class="text-center mb-4">
-                {% if role == 'admin' %}
-                    Admin Login
-                {% else %}
-                    Employee Login
-                {% endif %}
-            </h3>
-
-            <form method="POST">
-                {% csrf_token %}
-
-                <input type="hidden" name="role" value="{{ role }}">
-
-                <div class="mb-3">
-                    <label>Username</label>
-                    <input type="text" name="username" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label>Password</label>
-                    <input type="password" name="password" class="form-control" required>
-                </div>
-
-                <button class="btn btn-primary w-100">
-                    Login
-                </button>
-
-            </form>
-
-            <div class="text-center mt-3">
-                <a href="{% url 'landing' %}">← Back to role selection</a>
-            </div>
-
-        </div>
-
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Enter your username" required autofocus>
     </div>
+
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+    </div>
+
+    <button type="submit" class="auth-btn">
+        <i class="bi bi-box-arrow-in-right"></i>&nbsp; Sign In
+    </button>
+</form>
+
+<div class="auth-footer">
+    <a href="{% url 'landing' %}" class="auth-link">
+        <i class="bi bi-arrow-left"></i> Back to role selection
+    </a>
+    {% if role != 'admin' %}
+    <div style="margin-top:12px;">
+        Don't have an account?
+        <a href="{% url 'register' %}" class="auth-link">Register</a>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

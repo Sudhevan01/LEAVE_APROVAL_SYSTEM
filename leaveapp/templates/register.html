@@ -1,46 +1,38 @@
-{% extends 'base.html' %}
+{% extends 'base_auth.html' %}
+
+{% block title %}Register{% endblock %}
 
 {% block content %}
 
-<div class="row justify-content-center">
+<h2 class="auth-title">Create Account</h2>
+<p class="auth-subtitle">Register as a new employee to get started</p>
 
-    <div class="col-md-5">
+<form method="POST" class="auth-form">
+    {% csrf_token %}
 
-        <div class="card shadow p-4">
-
-            <h3 class="mb-4 text-center">
-                Employee Register
-            </h3>
-
-            <form method="POST">
-
-                {% csrf_token %}
-
-                <input type="text"
-                       name="username"
-                       class="form-control mb-3"
-                       placeholder="Username">
-
-                <input type="email"
-                       name="email"
-                       class="form-control mb-3"
-                       placeholder="Email">
-
-                <input type="password"
-                       name="password"
-                       class="form-control mb-3"
-                       placeholder="Password">
-
-                <button class="btn btn-success w-100">
-                    Register
-                </button>
-
-            </form>
-
-        </div>
-
+    <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="username" class="form-control" placeholder="Enter your full name" required autofocus>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-control" placeholder="name@company.com" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Create a strong password" required>
+    </div>
+
+    <button type="submit" class="auth-btn">
+        <i class="bi bi-person-plus"></i>&nbsp; Create Account
+    </button>
+</form>
+
+<div class="auth-footer">
+    Already have an account?
+    <a href="{% url 'login' %}" class="auth-link">Sign In</a>
 </div>
 
 {% endblock %}

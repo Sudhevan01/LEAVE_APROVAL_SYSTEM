@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendar{% endblock %}
+{% block page_title %}Leave Calendar{% endblock %}
+
+{% block content %}
+
+<div class="content-card animate-in">
+    <div class="content-card-header">
+        <div class="content-card-title">
+            <i class="bi bi-calendar3"></i> {{ month_name }} {{ year }}
+        </div>
+        <div class="d-flex gap-8">
+            <button class="btn-hrms btn-outline-hrms btn-sm-hrms" onclick="navigateCalendar('prev')">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="btn-hrms btn-primary-hrms btn-sm-hrms" onclick="window.location.href='{% url 'calendar' %}'">
+                Today
+            </button>
+            <button class="btn-hrms btn-outline-hrms btn-sm-hrms" onclick="navigateCalendar('next')">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <div class="content-card-body">
+        <input type="hidden" id="calendarMonth" value="{{ month }}">
+        <input type="hidden" id="calendarYear" value="{{ year }}">
+
+        <div class="calendar-grid">
+            <!-- Day Headers -->
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+
+            <!-- Calendar Days -->
+            {% for day in calendar_days %}
+            <div class="calendar-day {% if day.other_month %}other-month{% endif %} {% if day.is_today %}today{% endif %}">
+                <div class="calendar-day-number">
+                    {% if day.is_today %}
+                    <span>{{ day.day }}</span>
+                    {% else %}
+                    {{ day.day }}
+                    {% endif %}
+                </div>
+                {% for event in day.events %}
+                <div class="calendar-event {{ event.status|lower }}" title="{{ event.leave_type }} ({{ event.employee }})">
+                    {{ event.leave_type|truncatechars:12 }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Legend -->
+        <div class="d-flex gap-16 mt-3 justify-content-center" style="flex-wrap:wrap;">
+            <div class="d-flex align-items-center gap-8" style="font-size:0.8rem;color:var(--text-secondary);">
+                <span style="width:12px;height:12px;border-radius:3px;background:var(--success-light);border:1px solid var(--success);display:inline-block;"></span>
+                Approved
+            </div>
+            <div class="d-flex align-items-center gap-8" style="font-size:0.8rem;color:var(--text-secondary);">
+                <span style="width:12px;height:12px;border-radius:3px;background:var(--warning-light);border:1px solid var(--warning);display:inline-block;"></span>
+                Pending
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
